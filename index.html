@@ -677,6 +677,65 @@
         }
         .note-intern i { margin-top: 3px; }
 
+        .transfer-wrap { display: flex; flex-direction: column; }
+
+        .transfer-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: transparent;
+            border: 1.5px dashed var(--card-border);
+            border-radius: 15px;
+            padding: 13px;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .transfer-toggle:hover { border-color: var(--secondary-color); color: var(--secondary-color); background: var(--secondary-soft); }
+        .transfer-toggle:focus-visible { outline: 2px solid var(--secondary-color); outline-offset: 2px; }
+        .transfer-toggle .toggle-chev { font-size: 11px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .transfer-wrap.open .transfer-toggle { border-color: var(--secondary-color); color: var(--secondary-color); border-radius: 15px 15px 0 0; border-bottom-color: transparent; }
+        .transfer-wrap.open .toggle-chev { transform: rotate(180deg); }
+
+        .transfer-panel {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px 14px;
+            border: 1.5px dashed var(--secondary-color);
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            background: var(--secondary-soft);
+        }
+        .transfer-wrap.open .transfer-panel { display: flex; animation: rowIn 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .transfer-panel .qdd-btn { background: var(--card-bg); }
+
+        .transfer-q {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        .transfer-q i { color: var(--secondary-color); font-size: 13px; }
+
+        .transfer-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-gray);
+            line-height: 1.8;
+        }
+        .transfer-note i { color: var(--secondary-color); margin-top: 3px; }
+
         .events-list { display: flex; flex-direction: column; gap: 12px; margin-right: 39px; }
 
         .event-row {
@@ -887,6 +946,7 @@
         .lg-defer { background: var(--defer-color); }
         .lg-delete { background: var(--delete-color); }
         .lg-unpaid { background: var(--unpaid-color); }
+        .lg-old { background: linear-gradient(135deg, #14385d, #179c8e); }
 
         .track-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(102px, 1fr)); gap: 10px; }
 
@@ -930,6 +990,9 @@
         .tchip.unpaid { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #f0954a, #d5701c) border-box; }
         .tchip.unpaid .tc-state { color: var(--unpaid-text); }
 
+        .tchip.old { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #14385d, #179c8e) border-box; }
+        .tchip.old .tc-state { color: var(--primary-color); }
+
         .cut-badge {
             position: absolute;
             top: -10px;
@@ -970,6 +1033,7 @@
         .rule-card.r-delete { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #ef6a5a, #d5402f) border-box; }
         .rule-card.r-443 { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #f0954a, #d5701c) border-box; }
         .rule-card.r-excel { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #f2c14e, #d69a1f) border-box; }
+        .rule-card.r-transfer { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #14385d, #179c8e) border-box; }
 
         .rule-icon {
             width: 42px;
@@ -987,12 +1051,14 @@
         .r-delete .rule-icon { background: linear-gradient(135deg, #ef6a5a, #d5402f); }
         .r-443 .rule-icon { background: linear-gradient(135deg, #f0954a, #d5701c); }
         .r-excel .rule-icon { background: linear-gradient(135deg, #f2c14e, #d69a1f); }
+        .r-transfer .rule-icon { background: linear-gradient(135deg, #14385d, #179c8e); }
 
         .rule-text h3 { margin: 0 0 5px 0; font-size: 15px; font-weight: 700; }
         .r-excuse .rule-text h3 { color: var(--excuse-text); }
         .r-delete .rule-text h3 { color: var(--delete-text); }
         .r-443 .rule-text h3 { color: var(--unpaid-text); }
         .r-excel .rule-text h3 { color: #b78a14; }
+        .r-transfer .rule-text h3 { color: var(--paid-text); }
         body.dark .r-excel .rule-text h3 { color: #f2c14e; }
         .rule-text p { margin: 0; font-size: 13px; font-weight: 600; color: var(--text-gray); line-height: 1.9; }
 
@@ -1090,8 +1156,24 @@
             <div class="calc-card">
                 <div class="calc-body">
 
+                    <div class="transfer-wrap" id="transfer-wrap">
+                        <button class="transfer-toggle" id="transfer-toggle" type="button" aria-expanded="false">
+                            <i class="fas fa-shuffle"></i>
+                            <span>محوّل من تخصص آخر؟ اضغط هنا</span>
+                            <i class="fas fa-chevron-down toggle-chev"></i>
+                        </button>
+                        <div class="transfer-panel">
+                            <div class="transfer-q"><i class="fas fa-layer-group"></i>كم فصلًا دراسيًا درست بتخصصك القديم؟</div>
+                            <button class="qdd-btn placeholder" id="old-terms-btn" type="button">
+                                <span id="old-terms-label">اختر عدد الفصول...</span>
+                                <i class="fas fa-chevron-down qdd-chev"></i>
+                            </button>
+                            <div class="transfer-note"><i class="fas fa-circle-info"></i>فصولك بتخصصك القديم تُحسب من مدة المكافأة. اختر في الخطوة الأولى مدة خطة تخصصك الجديد، وفي الثانية فصل قبولك الأصلي بالجامعة لا فصل التحويل</div>
+                        </div>
+                    </div>
+
                     <div class="step">
-                        <div class="step-label"><span class="step-num">1</span>مدة خطتك الدراسية</div>
+                        <div class="step-label"><span class="step-num">1</span><span id="plan-step-text">مدة خطتك الدراسية</span></div>
                         <div class="plan-slider-wrap">
                             <div class="plan-readout">
                                 <span class="plan-value" id="plan-value">5 سنوات</span>
@@ -1167,6 +1249,7 @@
                     <div class="track-title"><i class="fas fa-route"></i>مسار المكافأة فصلًا بفصل</div>
                     <div class="track-legend">
                         <span><i class="lg-dot lg-paid"></i>مشمول</span>
+                        <span><i class="lg-dot lg-old"></i>تخصص قديم</span>
                         <span><i class="lg-dot lg-delete"></i>اعتذار</span>
                         <span><i class="lg-dot lg-excuse"></i>تأجيل</span>
                         <span><i class="lg-dot lg-unpaid"></i>بدون مكافأة</span>
@@ -1200,6 +1283,13 @@
                     <div class="rule-text">
                         <h3>الحالة الخاصة: الفصل 443</h3>
                         <p>الفصل الثالث من عام 1444هـ لا يُحسب فصلًا مستقلًا من مدة المكافأة، بل يُعتبر امتدادًا للفصل 442. مثال: طالب بدأ 411 وخطته 5 سنوات، تستمر مكافأته حتى 452 لأن 443 يمر دون أن يُستهلك من المدة. ودفعة 443 تُحسب مثل دفعة 442.</p>
+                    </div>
+                </div>
+                <div class="rule-card r-transfer reveal">
+                    <div class="rule-icon"><i class="fas fa-shuffle"></i></div>
+                    <div class="rule-text">
+                        <h3>التحويل بين التخصصات</h3>
+                        <p>مدة المكافأة تُبنى على خطة تخصصك الجديد، لكن الفصول التي درستها بتخصصك القديم تُستهلك منها دون أن تقدّمك نحو التخرج. مثال: طالب درس فصلين بتخصصه القديم ثم حوّل لتخصص خطته 5 سنوات، تنقطع مكافأته قبل تخرجه المتوقع بفصلين.</p>
                     </div>
                 </div>
                 <div class="rule-card r-excel reveal">
@@ -1295,6 +1385,8 @@
             planYears: 5,
             planTerms: 10,
             startTerm: null,
+            transfer: false,
+            oldTerms: null,
             events: []
         };
 
@@ -1380,7 +1472,7 @@
                 opt.className = 'picker-opt' + (o.value === cfg.selected ? ' selected' : '');
                 let badge = '';
                 if (o.value === 443) badge = '<span class="opt-badge">فصل ثالث</span>';
-                opt.innerHTML = badge + '<b>' + o.value + '</b><span>' + termLabel(o.value) + '</span>';
+                opt.innerHTML = badge + '<b>' + o.value + '</b><span>' + (o.label !== undefined ? o.label : termLabel(o.value)) + '</span>';
                 opt.addEventListener('click', function() {
                     closePicker();
                     cfg.onPick(o.value);
@@ -1519,6 +1611,48 @@
 
         let eventSeq = 0;
 
+        function oldTermsWord(n) {
+            if (n === 1) return 'فصل دراسي واحد';
+            if (n === 2) return 'فصلان دراسيان';
+            if (n <= 10) return '<b class="qdd-num">' + n + '</b> فصول دراسية';
+            return '<b class="qdd-num">' + n + '</b> فصلًا دراسيًا';
+        }
+
+        const transferWrap = document.getElementById('transfer-wrap');
+        const transferToggle = document.getElementById('transfer-toggle');
+        const oldTermsBtn = document.getElementById('old-terms-btn');
+        const oldTermsLabel = document.getElementById('old-terms-label');
+
+        function setTransfer(on) {
+            state.transfer = on;
+            transferWrap.classList.toggle('open', on);
+            transferToggle.setAttribute('aria-expanded', on ? 'true' : 'false');
+            document.getElementById('plan-step-text').textContent = on ? 'مدة خطة تخصصك الجديد' : 'مدة خطتك الدراسية';
+            renderEvents();
+            recalc();
+        }
+
+        transferToggle.addEventListener('click', function() { setTransfer(!state.transfer); });
+
+        oldTermsBtn.addEventListener('click', function() {
+            openPicker({
+                title: 'فصولك بتخصصك القديم',
+                sub: 'عدد الفصول الدراسية التي درستها قبل التحويل',
+                selected: state.oldTerms,
+                options: Array.from({ length: 12 }, (_, i) => ({
+                    value: i + 1,
+                    label: i === 0 ? 'فصل واحد' : i === 1 ? 'فصلان' : 'فصول دراسية'
+                })),
+                onPick: function(v) {
+                    state.oldTerms = v;
+                    oldTermsLabel.innerHTML = oldTermsWord(v);
+                    oldTermsBtn.classList.remove('placeholder');
+                    renderEvents();
+                    recalc();
+                }
+            });
+        });
+
         function typeCount(type, excludeId) {
             return state.events.filter(e => e.type === type && e.id !== excludeId).length;
         }
@@ -1549,7 +1683,7 @@
             const base = state.startTerm;
             const horizon = termsRange(base, 999)
                 .filter(t => !(t === 443 && base < 443))
-                .slice(0, state.planTerms + state.events.length + 4);
+                .slice(0, state.planTerms + (state.transfer && state.oldTerms ? state.oldTerms : 0) + state.events.length + 4);
             const used = state.events.filter(ev => ev.term !== null && ev.term !== current).map(ev => ev.term);
             return horizon.filter(t => !used.includes(t));
         }
@@ -1626,21 +1760,24 @@
             refreshAddBtn();
         }
 
-        function calculate(startTerm, planTerms, evMap) {
+        function calculate(startTerm, planTerms, evMap, oldTerms) {
             const start = startTerm;
-            let t = start, consumed = 0, completed = 0, lastPaid = null, grad = null, guard = 0;
+            let t = start, consumed = 0, completed = 0, oldLeft = oldTerms, lastPaid = null, grad = null, guard = 0;
             const track = [];
-            while (grad === null && guard < 80) {
+            while (grad === null && guard < 100) {
                 const merged443 = t === 443 && start < 443;
                 const ev = merged443 ? null : (evMap[t] || null);
+                const isOld = !merged443 && !ev && oldLeft > 0;
                 const counts = !merged443 && (!ev || ev === 'excuse');
-                const progresses = !merged443 && !ev;
+                const progresses = !merged443 && !ev && !isOld;
                 let st;
                 if (merged443) st = 'merged';
                 else if (ev === 'excuse') st = 'excuse';
                 else if (ev === 'defer') st = 'defer';
+                else if (isOld) st = consumed < planTerms ? 'old' : 'unpaid';
                 else st = consumed < planTerms ? 'paid' : 'unpaid';
                 if (counts) { consumed++; if (consumed === planTerms) lastPaid = t; }
+                if (isOld) oldLeft--;
                 if (progresses) { completed++; if (completed === planTerms) grad = t; }
                 track.push({ term: t, state: st });
                 t = nextTerm(t);
@@ -1655,17 +1792,20 @@
             unpaid: 'بدون مكافأة',
             excuse: 'اعتذار، محسوب من المدة',
             defer: 'تأجيل، غير محسوب',
+            old: 'مشمول — تخصص قديم',
             merged: 'يُحسب مع 442'
         };
 
         function recalc() {
             const resSection = document.getElementById('results');
             if (!state.startTerm) { resSection.classList.remove('show'); return; }
+            if (state.transfer && !state.oldTerms) { resSection.classList.remove('show'); return; }
 
             const evMap = {};
             state.events.forEach(ev => { if (ev.term !== null) evMap[ev.term] = ev.type; });
 
-            const r = calculate(state.startTerm, state.planTerms, evMap);
+            const oldTerms = state.transfer ? state.oldTerms : 0;
+            const r = calculate(state.startTerm, state.planTerms, evMap, oldTerms);
             if (r.grad === null || r.lastPaid === null) { resSection.classList.remove('show'); return; }
 
             document.getElementById('res-lastpaid').textContent = r.lastPaid;
@@ -1677,12 +1817,13 @@
 
             const verdict = document.getElementById('verdict');
             const unpaidStudy = r.track.filter(x => x.state === 'unpaid').length;
+            const transferNote = oldTerms ? ' استُهلك من مدة مكافأتك ' + (oldTerms === 1 ? 'فصل واحد' : oldTerms === 2 ? 'فصلان' : '<b>' + oldTerms + '</b> فصول') + ' بتخصصك القديم.' : '';
             if (unpaidStudy === 0) {
                 verdict.className = 'verdict ok';
-                verdict.innerHTML = '<i class="fas fa-circle-check"></i><span>مكافأتك تغطي كامل فصول دراستك حتى تخرجك المتوقع في <b>' + r.grad + '</b>، وتنقطع رسميًا في <b>' + r.cutoff + '</b> بعد التخرج.</span>';
+                verdict.innerHTML = '<i class="fas fa-circle-check"></i><span>مكافأتك تغطي كامل فصول دراستك حتى تخرجك المتوقع في <b>' + r.grad + '</b>، وتنقطع رسميًا في <b>' + r.cutoff + '</b> بعد التخرج.' + transferNote + '</span>';
             } else {
                 verdict.className = 'verdict warn';
-                verdict.innerHTML = '<i class="fas fa-triangle-exclamation"></i><span>تنقطع مكافأتك في <b>' + r.cutoff + '</b> قبل تخرجك المتوقع، وستدرس <b>' + unpaidStudy + '</b> ' + (unpaidStudy === 1 ? 'فصلًا' : 'فصول') + ' بدون مكافأة. <b>لكن إن كنت مستحقًا لمكافأة التفوق فستستمر بالنزول رغم الانقطاع.</b></span>';
+                verdict.innerHTML = '<i class="fas fa-triangle-exclamation"></i><span>تنقطع مكافأتك في <b>' + r.cutoff + '</b> قبل تخرجك المتوقع، وستدرس <b>' + unpaidStudy + '</b> ' + (unpaidStudy === 1 ? 'فصلًا' : 'فصول') + ' بدون مكافأة.' + transferNote + ' <b>لكن إن كنت مستحقًا لمكافأة التفوق فستستمر بالنزول رغم الانقطاع.</b></span>';
             }
 
             const grid = document.getElementById('track-grid');

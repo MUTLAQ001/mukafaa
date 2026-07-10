@@ -1668,30 +1668,20 @@
             });
         });
 
-        function typeCount(type, excludeId) {
-            return state.events.filter(e => e.type === type && e.id !== excludeId).length;
-        }
-
         document.getElementById('add-event').addEventListener('click', function() {
             if (!state.startTerm) {
                 startBtn.click();
                 return;
             }
-            let type = null;
-            if (typeCount('defer') < 2) type = 'defer';
-            else if (typeCount('excuse') < 2) type = 'excuse';
-            if (type === null) return;
+            let type = 'defer';
             state.events.push({ id: ++eventSeq, term: null, type: type });
             renderEvents();
         });
 
         function refreshAddBtn() {
             const btn = document.getElementById('add-event');
-            const full = typeCount('defer') >= 2 && typeCount('excuse') >= 2;
-            btn.classList.toggle('disabled', full);
-            btn.innerHTML = full
-                ? '<i class="fas fa-ban"></i>استنفدت فرص التأجيل والاعتذار'
-                : '<i class="fas fa-plus"></i>إضافة فصل';
+            btn.classList.remove('disabled');
+            btn.innerHTML = '<i class="fas fa-plus"></i>إضافة فصل';
         }
 
         function eventTermOptions(current) {
@@ -1740,14 +1730,9 @@
                     b.type = 'button';
                     b.dataset.type = type;
                     b.textContent = label;
-                    const locked = ev.type !== type && typeCount(type, ev.id) >= 2;
                     if (ev.type === type) b.classList.add('on');
-                    if (locked) {
-                        b.classList.add('locked');
-                        b.title = type === 'defer' ? 'استنفدت فرصتي التأجيل' : 'استنفدت فرصتي الاعتذار';
-                    }
                     b.addEventListener('click', function() {
-                        if (b.classList.contains('locked') || ev.type === type) return;
+                        if (ev.type === type) return;
                         ev.type = type;
                         renderEvents();
                         recalc();

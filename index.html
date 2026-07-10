@@ -1260,7 +1260,7 @@
                     <div class="rule-icon"><i class="fas fa-calendar-plus"></i></div>
                     <div class="rule-text">
                         <h3>الحالة الخاصة: الفصل 443</h3>
-                        <p>للدفعات التي بدأت قبل 443 (مثل 441 و442) يمر الفصل 443 دون أن يُحسب فصلًا مستقلًا من مدة المكافأة، فتبقى كل سنة فصلين. أما دفعة 443 نفسها فتُحسب كدفعة 451 تمامًا: تبدأ مدتها من 451 وتنتهي في نفس فصل دفعة 451.</p>
+                        <p>للدفعات التي بدأت قبل 443 (مثل 441 و442) يمر الفصل 443 دون أن يُحسب فصلًا مستقلًا من مدة المكافأة، فتبقى كل سنة فصلين. أما دفعة 443 نفسها فتنزل عليها المكافأة في الفصل 443 كفصل إضافي، ثم تكمل مثل دفعة 451 تمامًا فتنقطع مكافأتها في نفس فصل دفعة 451.</p>
                     </div>
                 </div>
                 <div class="rule-card r-transfer reveal">
@@ -1658,8 +1658,9 @@
 
         function eventTermOptions(current) {
             const base = state.startTerm === 443 ? 451 : state.startTerm;
-            const horizon = termsRange(base, 999)
+            let horizon = termsRange(base, 999)
                 .slice(0, state.planTerms + (state.transfer && state.oldTerms ? state.oldTerms : 0) + state.events.length + 4);
+            if (state.startTerm === 443) horizon = [443, ...horizon];
             const used = state.events.filter(ev => ev.term !== null && ev.term !== current).map(ev => ev.term);
             return horizon.filter(t => !used.includes(t) && !(t === 443 && state.startTerm < 443));
         }
@@ -1737,9 +1738,18 @@
         }
 
         function calculate(startTerm, planTerms, evMap, oldTerms) {
-            const start = startTerm === 443 ? 451 : startTerm;
+            const bonus443 = startTerm === 443;
+            const start = bonus443 ? 451 : startTerm;
             let t = start, consumed = 0, completed = 0, oldLeft = oldTerms, lastPaid = null, grad = null, guard = 0;
             const track = [];
+            if (bonus443) {
+                const ev443 = evMap[443] || null;
+                let st443;
+                if (ev443 === 'excuse') st443 = 'excuse';
+                else if (ev443 === 'defer') st443 = 'defer';
+                else { st443 = 'paid'; lastPaid = 443; }
+                track.push({ term: 443, state: st443 });
+            }
             while (grad === null && guard < 100) {
                 const merged443 = t === 443 && start < 443;
                 const ev = merged443 ? null : (evMap[t] || null);

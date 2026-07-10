@@ -642,24 +642,6 @@
             white-space: nowrap;
         }
 
-        .note-443 {
-            display: none;
-            align-items: flex-start;
-            gap: 10px;
-            margin-right: 39px;
-            margin-top: 2px;
-            padding: 12px 15px;
-            border-radius: 13px;
-            background: rgba(230, 126, 34, 0.09);
-            border: 1px dashed rgba(230, 126, 34, 0.45);
-            color: var(--unpaid-text);
-            font-size: 12.5px;
-            font-weight: 600;
-            line-height: 1.7;
-        }
-        .note-443.show { display: flex; }
-        .note-443 i { margin-top: 3px; }
-
         .note-intern {
             display: flex;
             align-items: flex-start;
@@ -976,14 +958,6 @@
         .tchip.excuse { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #ef6a5a, #d5402f) border-box; }
         .tchip.excuse .tc-state { color: var(--delete-text); }
 
-        .tchip.merged {
-            border: 2px dashed var(--card-border);
-            background: var(--past-bg);
-            opacity: 0.85;
-        }
-        .tchip.merged .tc-code { color: var(--past-color); }
-        .tchip.merged .tc-state { color: var(--past-color); }
-
         .tchip.defer { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #4aa8e0, #2b83c2) border-box; }
         .tchip.defer .tc-state { color: var(--excuse-text); }
 
@@ -992,6 +966,14 @@
 
         .tchip.old { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #14385d, #179c8e) border-box; }
         .tchip.old .tc-state { color: var(--primary-color); }
+
+        .tchip.merged {
+            border: 2px dashed var(--card-border);
+            background: var(--past-bg);
+            opacity: 0.85;
+        }
+        .tchip.merged .tc-code { color: var(--past-color); }
+        .tchip.merged .tc-state { color: var(--past-color); }
 
         .cut-badge {
             position: absolute;
@@ -1129,7 +1111,7 @@
             .footer-link { padding: 10px 18px; font-size: 13px; }
             .result-grid { grid-template-columns: 1fr; }
             .result-num { font-size: 27px; }
-            .plan-slider-wrap, .field-wrap, .events-list, .add-event-btn, .step-hint, .note-443, .note-intern { margin-right: 0; }
+            .plan-slider-wrap, .field-wrap, .events-list, .add-event-btn, .step-hint, .note-intern { margin-right: 0; }
             .track-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
             .event-row { flex-wrap: wrap; }
             .event-row .field-mini { flex: 1 1 100%; }
@@ -1199,10 +1181,6 @@
                                 <span id="start-term-label">اختر فصل القبول...</span>
                                 <i class="fas fa-chevron-down qdd-chev"></i>
                             </button>
-                        </div>
-                        <div class="note-443" id="note-443">
-                            <i class="fas fa-triangle-exclamation"></i>
-                            <span>دفعة 443 تُحسب مثل دفعة 442، والفصل 443 لا يُحسب فصلًا مستقلًا من مدة المكافأة.</span>
                         </div>
                     </div>
 
@@ -1282,7 +1260,7 @@
                     <div class="rule-icon"><i class="fas fa-calendar-plus"></i></div>
                     <div class="rule-text">
                         <h3>الحالة الخاصة: الفصل 443</h3>
-                        <p>الفصل الثالث من عام 1444هـ لا يُحسب فصلًا مستقلًا من مدة المكافأة، بل يُعتبر امتدادًا للفصل 442. مثال: طالب بدأ 411 وخطته 5 سنوات، تستمر مكافأته حتى 452 لأن 443 يمر دون أن يُستهلك من المدة. ودفعة 443 تُحسب مثل دفعة 442.</p>
+                        <p>للدفعات التي بدأت قبل 443 (مثل 441 و442) يمر الفصل 443 دون أن يُحسب فصلًا مستقلًا من مدة المكافأة، فتبقى كل سنة فصلين. أما دفعة 443 نفسها فتُحسب كدفعة 451 تمامًا: تبدأ مدتها من 451 وتنتهي في نفس فصل دفعة 451.</p>
                     </div>
                 </div>
                 <div class="rule-card r-transfer reveal">
@@ -1602,7 +1580,6 @@
                     state.startTerm = v;
                     startLabel.innerHTML = '<b class="qdd-num">' + v + '</b> — ' + termLabel(v);
                     startBtn.classList.remove('placeholder');
-                    document.getElementById('note-443').classList.toggle('show', v === 443);
                     renderEvents();
                     recalc();
                 }
@@ -1680,12 +1657,11 @@
         }
 
         function eventTermOptions(current) {
-            const base = state.startTerm;
+            const base = state.startTerm === 443 ? 451 : state.startTerm;
             const horizon = termsRange(base, 999)
-                .filter(t => !(t === 443 && base < 443))
                 .slice(0, state.planTerms + (state.transfer && state.oldTerms ? state.oldTerms : 0) + state.events.length + 4);
             const used = state.events.filter(ev => ev.term !== null && ev.term !== current).map(ev => ev.term);
-            return horizon.filter(t => !used.includes(t));
+            return horizon.filter(t => !used.includes(t) && !(t === 443 && state.startTerm < 443));
         }
 
         function renderEvents() {
@@ -1761,7 +1737,7 @@
         }
 
         function calculate(startTerm, planTerms, evMap, oldTerms) {
-            const start = startTerm;
+            const start = startTerm === 443 ? 451 : startTerm;
             let t = start, consumed = 0, completed = 0, oldLeft = oldTerms, lastPaid = null, grad = null, guard = 0;
             const track = [];
             while (grad === null && guard < 100) {
@@ -1793,7 +1769,7 @@
             excuse: 'اعتذار، محسوب من المدة',
             defer: 'تأجيل، غير محسوب',
             old: 'مشمول — تخصص قديم',
-            merged: 'يُحسب مع 442'
+            merged: 'يمر دون احتساب'
         };
 
         function recalc() {

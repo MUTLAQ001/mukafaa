@@ -863,7 +863,7 @@
             color: var(--delete-text);
         }
 
-        .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 30px; }
+        .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 30px; }
 
         .result-card {
             background: var(--card-bg);
@@ -889,7 +889,6 @@
         }
 
         .result-card.rc-paid .result-icon { background: linear-gradient(135deg, #22b3a3, #128577); }
-        .result-card.rc-cut .result-icon { background: linear-gradient(135deg, #ef6a5a, #d5402f); }
         .result-card.rc-grad .result-icon { background: linear-gradient(135deg, #4aa8e0, #2b83c2); }
 
         .result-num {
@@ -1212,12 +1211,6 @@
                     <div class="result-num" id="res-lastpaid">--</div>
                     <div class="result-name" id="res-lastpaid-name"></div>
                     <div class="result-sub">آخر فصل تُصرف لك فيه المكافأة</div>
-                </div>
-                <div class="result-card rc-cut">
-                    <div class="result-icon"><i class="fas fa-scissors"></i></div>
-                    <div class="result-num" id="res-cutoff">--</div>
-                    <div class="result-name" id="res-cutoff-name"></div>
-                    <div class="result-sub">الفصل الذي تنقطع فيه المكافأة</div>
                 </div>
                 <div class="result-card rc-grad">
                     <div class="result-icon"><i class="fas fa-graduation-cap"></i></div>
@@ -1819,8 +1812,6 @@
 
             document.getElementById('res-lastpaid').textContent = r.lastPaid;
             document.getElementById('res-lastpaid-name').textContent = termLabel(r.lastPaid);
-            document.getElementById('res-cutoff').textContent = r.cutoff;
-            document.getElementById('res-cutoff-name').textContent = termLabel(r.cutoff);
             document.getElementById('res-grad').textContent = r.grad;
             document.getElementById('res-grad-name').textContent = termLabel(r.grad);
 
@@ -1829,7 +1820,7 @@
             const transferNote = oldTerms ? ' استُهلك من مدة مكافأتك ' + (oldTerms === 1 ? 'فصل واحد' : oldTerms === 2 ? 'فصلان' : '<b>' + oldTerms + '</b> فصول') + ' بتخصصك القديم.' : '';
             if (unpaidStudy === 0) {
                 verdict.className = 'verdict ok';
-                verdict.innerHTML = '<i class="fas fa-circle-check"></i><span>مكافأتك تغطي كامل فصول دراستك حتى تخرجك المتوقع في <b>' + r.grad + '</b>، وتنقطع رسميًا في <b>' + r.cutoff + '</b> بعد التخرج.' + transferNote + '</span>';
+                verdict.innerHTML = '<i class="fas fa-circle-check"></i><span>مكافأتك تغطي كامل فصول دراستك حتى تخرجك المتوقع في <b>' + r.grad + '</b>، وتنقطع رسميًا بنهاية ترم <b>' + r.grad + '</b>.' + transferNote + '</span>';
             } else {
                 verdict.className = 'verdict warn';
                 verdict.innerHTML = '<i class="fas fa-triangle-exclamation"></i><span>تنقطع مكافأتك في <b>' + r.cutoff + '</b> قبل تخرجك المتوقع، وستدرس <b>' + unpaidStudy + '</b> ' + (unpaidStudy === 1 ? 'فصلًا' : 'فصول') + ' بدون مكافأة.' + transferNote + ' <b>لكن إن كنت مستحقًا لمكافأة التفوق فستستمر بالنزول رغم الانقطاع.</b></span>';

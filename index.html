@@ -244,8 +244,9 @@
             height: 28px;
             min-width: 28px;
             border-radius: 9px;
-            background: linear-gradient(135deg, var(--header-grad-1), var(--header-grad-3));
+            background: linear-gradient(135deg, #22b3a3, #128577);
             color: #fff;
+            box-shadow: 0 3px 8px rgba(23, 156, 142, 0.35);
             font-size: 13px;
             font-weight: 700;
             display: flex;
@@ -415,6 +416,18 @@
         .qdd-btn:focus-visible { outline: none; border-color: var(--secondary-color); box-shadow: 0 0 0 3px var(--secondary-soft); }
         .qdd-btn.placeholder { color: var(--text-gray); }
         .qdd-btn .qdd-chev { font-size: 12px; color: var(--text-gray); }
+
+        .qdd-num {
+            font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
+            font-weight: 800;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, var(--primary-color) 15%, var(--secondary-color) 85%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            direction: ltr;
+            unicode-bidi: embed;
+        }
 
         .picker-overlay {
             position: fixed;
@@ -590,7 +603,10 @@
             font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
             font-size: 20px;
             font-weight: 800;
-            color: var(--text-dark);
+            background: linear-gradient(135deg, var(--primary-color) 15%, var(--secondary-color) 85%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             direction: ltr;
             line-height: 1;
         }
@@ -605,11 +621,11 @@
             border-color: var(--primary-deep);
             box-shadow: 0 6px 18px rgba(15, 43, 72, 0.25);
         }
-        .picker-opt.selected b { color: #fff; }
+        .picker-opt.selected b { background: none; -webkit-background-clip: initial; background-clip: initial; color: #fff; }
         .picker-opt.selected span { color: rgba(255,255,255,0.65); }
 
         body.dark .picker-opt.selected { background: var(--secondary-color); border-color: var(--secondary-color); }
-        body.dark .picker-opt.selected b { color: #06211d; }
+        body.dark .picker-opt.selected b { background: none; -webkit-background-clip: initial; background-clip: initial; color: #06211d; }
         body.dark .picker-opt.selected span { color: rgba(6,33,29,0.7); }
 
         .picker-opt .opt-badge {
@@ -643,6 +659,23 @@
         }
         .note-443.show { display: flex; }
         .note-443 i { margin-top: 3px; }
+
+        .note-intern {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-right: 39px;
+            margin-top: 2px;
+            padding: 12px 15px;
+            border-radius: 13px;
+            background: var(--secondary-soft);
+            border: 1px dashed rgba(23, 156, 142, 0.45);
+            color: var(--paid-text);
+            font-size: 12.5px;
+            font-weight: 600;
+            line-height: 1.7;
+        }
+        .note-intern i { margin-top: 3px; }
 
         .events-list { display: flex; flex-direction: column; gap: 12px; margin-right: 39px; }
 
@@ -867,7 +900,13 @@
                         linear-gradient(135deg, #d5dce4, #b8c0ca) border-box;
         }
 
-        .tchip .tc-code { font-family: 'Alexandria', sans-serif; font-size: 19px; font-weight: 800; color: var(--text-dark); direction: ltr; }
+        .tchip .tc-code {
+            font-family: 'Alexandria', sans-serif;
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--primary-color);
+            direction: ltr;
+        }
         .tchip .tc-state { display: block; font-size: 10.5px; font-weight: 700; margin-top: 4px; }
         .tchip .tc-year { display: block; font-size: 10px; font-weight: 600; color: var(--text-gray); margin-top: 3px; }
 
@@ -930,6 +969,7 @@
         .rule-card.r-excuse { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #4aa8e0, #2b83c2) border-box; }
         .rule-card.r-delete { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #ef6a5a, #d5402f) border-box; }
         .rule-card.r-443 { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #f0954a, #d5701c) border-box; }
+        .rule-card.r-excel { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #f2c14e, #d69a1f) border-box; }
 
         .rule-icon {
             width: 42px;
@@ -946,11 +986,14 @@
         .r-excuse .rule-icon { background: linear-gradient(135deg, #4aa8e0, #2b83c2); }
         .r-delete .rule-icon { background: linear-gradient(135deg, #ef6a5a, #d5402f); }
         .r-443 .rule-icon { background: linear-gradient(135deg, #f0954a, #d5701c); }
+        .r-excel .rule-icon { background: linear-gradient(135deg, #f2c14e, #d69a1f); }
 
         .rule-text h3 { margin: 0 0 5px 0; font-size: 15px; font-weight: 700; }
         .r-excuse .rule-text h3 { color: var(--excuse-text); }
         .r-delete .rule-text h3 { color: var(--delete-text); }
         .r-443 .rule-text h3 { color: var(--unpaid-text); }
+        .r-excel .rule-text h3 { color: #b78a14; }
+        body.dark .r-excel .rule-text h3 { color: #f2c14e; }
         .rule-text p { margin: 0; font-size: 13px; font-weight: 600; color: var(--text-gray); line-height: 1.9; }
 
         .disclaimer {
@@ -1020,7 +1063,7 @@
             .footer-link { padding: 10px 18px; font-size: 13px; }
             .result-grid { grid-template-columns: 1fr; }
             .result-num { font-size: 27px; }
-            .plan-slider-wrap, .field-wrap, .events-list, .add-event-btn, .step-hint, .note-443 { margin-right: 0; }
+            .plan-slider-wrap, .field-wrap, .events-list, .add-event-btn, .step-hint, .note-443, .note-intern { margin-right: 0; }
             .track-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
             .event-row { flex-wrap: wrap; }
             .event-row .field-mini { flex: 1 1 100%; }
@@ -1059,6 +1102,10 @@
                                 <div class="qslider-thumb" id="plan-thumb"></div>
                             </div>
                             <div class="qslider-scale" id="plan-scale"></div>
+                        </div>
+                        <div class="note-intern">
+                            <i class="fas fa-user-doctor"></i>
+                            <span>للتخصصات الصحية: سنة الامتياز لا تُحسب من مدة الخطة الدراسية، فاختر عدد السنوات بدونها.</span>
                         </div>
                     </div>
 
@@ -1153,6 +1200,13 @@
                     <div class="rule-text">
                         <h3>الحالة الخاصة: الفصل 443</h3>
                         <p>الفصل الثالث من عام 1444هـ لا يُحسب فصلًا مستقلًا من مدة المكافأة، بل يُعتبر امتدادًا للفصل 442. مثال: طالب بدأ 411 وخطته 5 سنوات، تستمر مكافأته حتى 452 لأن 443 يمر دون أن يُستهلك من المدة. ودفعة 443 تُحسب مثل دفعة 442.</p>
+                    </div>
+                </div>
+                <div class="rule-card r-excel reveal">
+                    <div class="rule-icon"><i class="fas fa-star"></i></div>
+                    <div class="rule-text">
+                        <h3>مكافأة التفوق لا تنقطع</h3>
+                        <p>انقطاع المكافأة الشهرية لا يوقف مكافأة التفوق؛ إذا كنت مستحقًا لها فستستمر بالنزول. شرط الاستحقاق: إكمال فصلين دراسيين وأن يكون متوسط معدلك فيهما 4.5 فأعلى (مجموع معدلي الفصلين ÷ 2 ≥ 4.5).</p>
                     </div>
                 </div>
             </div>
@@ -1454,7 +1508,7 @@
                 options: termsRange(FIRST_TERM, LAST_START_TERM).map(t => ({ value: t })),
                 onPick: function(v) {
                     state.startTerm = v;
-                    startLabel.textContent = v + ' — ' + termLabel(v);
+                    startLabel.innerHTML = '<b class="qdd-num">' + v + '</b> — ' + termLabel(v);
                     startBtn.classList.remove('placeholder');
                     document.getElementById('note-443').classList.toggle('show', v === 443);
                     renderEvents();
@@ -1514,7 +1568,7 @@
                 const termBtn = document.createElement('button');
                 termBtn.type = 'button';
                 termBtn.className = 'qdd-btn' + (ev.term === null ? ' placeholder' : '');
-                termBtn.innerHTML = '<span>' + (ev.term === null ? 'الفصل...' : ev.term) + '</span><i class="fas fa-chevron-down qdd-chev"></i>';
+                termBtn.innerHTML = '<span>' + (ev.term === null ? 'الفصل...' : '<b class="qdd-num">' + ev.term + '</b>') + '</span><i class="fas fa-chevron-down qdd-chev"></i>';
                 termBtn.addEventListener('click', function() {
                     openPicker({
                         title: 'اختر الفصل',
@@ -1628,7 +1682,7 @@
                 verdict.innerHTML = '<i class="fas fa-circle-check"></i><span>مكافأتك تغطي كامل فصول دراستك حتى تخرجك المتوقع في <b>' + r.grad + '</b>، وتنقطع رسميًا في <b>' + r.cutoff + '</b> بعد التخرج.</span>';
             } else {
                 verdict.className = 'verdict warn';
-                verdict.innerHTML = '<i class="fas fa-triangle-exclamation"></i><span>تنقطع مكافأتك في <b>' + r.cutoff + '</b> قبل تخرجك المتوقع، وستدرس <b>' + unpaidStudy + '</b> ' + (unpaidStudy === 1 ? 'فصلًا' : 'فصول') + ' بدون مكافأة.</span>';
+                verdict.innerHTML = '<i class="fas fa-triangle-exclamation"></i><span>تنقطع مكافأتك في <b>' + r.cutoff + '</b> قبل تخرجك المتوقع، وستدرس <b>' + unpaidStudy + '</b> ' + (unpaidStudy === 1 ? 'فصلًا' : 'فصول') + ' بدون مكافأة. <b>لكن إن كنت مستحقًا لمكافأة التفوق فستستمر بالنزول رغم الانقطاع.</b></span>';
             }
 
             const grid = document.getElementById('track-grid');

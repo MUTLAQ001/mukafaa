@@ -391,6 +391,11 @@
         body.dark .qslider-mark.on { color: var(--secondary-bright); }
         body.dark .qslider-mark.on::before { background: var(--secondary-bright); }
 
+        .qslider-mark-half { font-size: 10px; font-weight: 600; opacity: 0.72; }
+        .qslider-mark-half span { transform: scale(0.92); }
+        .qslider-mark-half::before { height: 5px; }
+        .qslider-mark-half.on { opacity: 1; }
+
         .field-wrap { margin-right: 39px; }
 
         .qdd-btn {
@@ -1472,6 +1477,8 @@
         function yearsWord(n) {
             if (n === 1) return 'سنة واحدة';
             if (n === 2) return 'سنتان';
+            if (n === 2.5) return 'سنتان ونصف';
+            if (n === 4.5) return '4 سنوات ونصف';
             return n + ' سنوات';
         }
 
@@ -1487,42 +1494,73 @@
             const thumb = document.getElementById('plan-thumb');
             const scale = document.getElementById('plan-scale');
             const MIN = 1, MAX = 10;
+            const ALLOWED = [1, 2, 2.5, 3, 4, 4.5, 5, 6, 7, 8, 9, 10];
+            const HALVES = [2.5, 4.5];
+
+            function pctOf(v) { return ((v - MIN) / (MAX - MIN)) * 100; }
+            function snap(raw) {
+                let best = ALLOWED[0], bd = Infinity;
+                for (const v of ALLOWED) { const d = Math.abs(v - raw); if (d < bd) { bd = d; best = v; } }
+                return best;
+            }
+            function stepBy(dir) {
+                const i = ALLOWED.indexOf(state.planYears);
+                const ni = Math.min(ALLOWED.length - 1, Math.max(0, i + dir));
+                setYears(ALLOWED[ni]);
+            }
 
             for (let i = MIN; i <= MAX; i++) {
-                const pct = ((i - MIN) / (MAX - MIN)) * 100;
                 const m = document.createElement('button');
                 m.type = 'button';
                 m.className = 'qslider-mark';
-                m.style.right = pct + '%';
+                m.style.right = pctOf(i) + '%';
                 m.innerHTML = '<span>' + i + '</span>';
                 m.setAttribute('aria-label', yearsWord(i));
                 m.addEventListener('click', function() { setYears(i); });
                 scale.appendChild(m);
             }
-            const marks = scale.querySelectorAll('.qslider-mark');
+            HALVES.forEach(function(v) {
+                const h = document.createElement('button');
+                h.type = 'button';
+                h.className = 'qslider-mark qslider-mark-half';
+                h.style.right = pctOf(v) + '%';
+                h.innerHTML = '<span>' + (v % 1 ? String(v).replace('.', '٫') : v) + '</span>';
+                h.setAttribute('aria-label', yearsWord(v));
+                h.addEventListener('click', function() { setYears(v); });
+                scale.appendChild(h);
+            });
+            const marks = Array.from(scale.querySelectorAll('.qslider-mark'));
 
             function paint() {
-                const pct = ((state.planYears - MIN) / (MAX - MIN)) * 100;
+                const pct = pctOf(state.planYears);
                 fill.style.width = pct + '%';
                 thumb.style.right = pct + '%';
                 slider.setAttribute('aria-valuenow', state.planYears);
                 slider.setAttribute('aria-valuetext', yearsWord(state.planYears));
                 document.getElementById('plan-value').textContent = yearsWord(state.planYears);
                 document.getElementById('plan-terms-note').textContent = termsWord(state.planTerms);
-                marks.forEach((el, i) => el.classList.toggle('on', i + MIN === state.planYears));
+                marks.forEach(function(el) {
+                    const v = parseFloat(el.getAttribute('data-v'));
+                    el.classList.toggle('on', v === state.planYears);
+                });
             }
 
+            marks.forEach(function(el, idx) {
+                const v = idx < (MAX - MIN + 1) ? MIN + idx : HALVES[idx - (MAX - MIN + 1)];
+                el.setAttribute('data-v', v);
+            });
+
             function paintVisual(raw) {
-                const pct = ((raw - MIN) / (MAX - MIN)) * 100;
+                const pct = pctOf(raw);
                 fill.style.width = pct + '%';
                 thumb.style.right = pct + '%';
             }
 
             function setYears(y) {
-                y = Math.min(MAX, Math.max(MIN, Math.round(y)));
+                y = snap(Math.min(MAX, Math.max(MIN, y)));
                 if (y !== state.planYears) {
                     state.planYears = y;
-                    state.planTerms = y * 2;
+                    state.planTerms = Math.round(y * 2);
                     recalc();
                 }
                 paint();
@@ -1557,8 +1595,8 @@
             slider.addEventListener('pointercancel', endDrag);
 
             slider.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); setYears(state.planYears - 1); }
-                else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); setYears(state.planYears + 1); }
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); stepBy(-1); }
+                else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); stepBy(1); }
                 else if (e.key === 'Home') { e.preventDefault(); setYears(MIN); }
                 else if (e.key === 'End') { e.preventDefault(); setYears(MAX); }
             });

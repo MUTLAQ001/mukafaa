@@ -980,28 +980,6 @@
         .tchip.merged .tc-code { color: var(--past-color); }
         .tchip.merged .tc-state { color: var(--past-color); }
 
-        .cut-badge {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--delete-color);
-            color: #fff;
-            font-size: 9.5px;
-            font-weight: 700;
-            padding: 3px 9px;
-            border-radius: 50px;
-            white-space: nowrap;
-            box-shadow: 0 3px 10px rgba(231, 76, 60, 0.4);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
-            70% { box-shadow: 0 0 0 7px rgba(231, 76, 60, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
-        }
-
         .rules-section { padding-bottom: 10px; }
 
         .rules-grid { display: flex; flex-direction: column; gap: 14px; }
@@ -1832,9 +1810,7 @@
             r.track.forEach(x => {
                 const chip = document.createElement('div');
                 chip.className = 'tchip ' + x.state;
-                let cut = '';
-                if (x.term === r.cutoff) cut = '<span class="cut-badge"><i class="fas fa-scissors"></i> تنقطع هنا</span>';
-                chip.innerHTML = cut +
+                chip.innerHTML =
                     '<div class="tc-code">' + x.term + '</div>' +
                     '<span class="tc-state">' + STATE_LABELS[x.state] + '</span>' +
                     '<span class="tc-year">' + termLabel(x.term) + '</span>';

@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة انقطاع المكافأة - جامعة القصيم</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Alexandria:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #0f2b48;
+            --primary-deep: #0a1f36;
+            --secondary-color: #179c8e;
+            --secondary-bright: #4dd8c8;
+            --secondary-soft: rgba(23, 156, 142, 0.1);
+            --page-bg: #eef3f9;
+            --card-bg: #ffffff;
+            --card-border: #e3eaf2;
+            --text-dark: #22303e;
+            --text-gray: #7d8a97;
+            --past-color: #a0aab5;
+            --past-bg: #f3f4f6;
+            --active-color: #e67e22;
+
+            --paid-color: #179c8e;
+            --paid-text: #0e6f64;
+            --excuse-color: #3498db;
+            --excuse-text: #217dbb;
+            --delete-color: #e74c3c;
+            --delete-text: #c0392b;
+            --defer-color: #8e7cc3;
+            --defer-text: #6a55a8;
+            --unpaid-color: #e67e22;
+            --unpaid-text: #c26612;
+
+            --header-grad-1: #0f2b48;
+            --header-grad-2: #14385d;
+            --header-grad-3: #11554f;
+            --shadow-soft: 0 4px 15px rgba(15, 43, 72, 0.05);
+            --shadow-hover: 0 12px 30px rgba(15, 43, 72, 0.1);
+        }
+
+        body.dark {
+            --primary-color: #cfe3f5;
+            --primary-deep: #060e18;
+            --secondary-color: #2fc4b4;
+            --secondary-bright: #4dd8c8;
+            --secondary-soft: rgba(47, 196, 180, 0.12);
+            --page-bg: #0d1520;
+            --card-bg: #16202e;
+            --card-border: #24344a;
+            --text-dark: #e6edf5;
+            --text-gray: #8fa0b3;
+            --past-color: #5d6b7c;
+            --past-bg: #131b27;
+            --active-color: #f39c4a;
+
+            --paid-text: #4dd8c8;
+            --excuse-text: #5db4ec;
+            --delete-text: #f0736a;
+            --defer-text: #ab9be0;
+            --unpaid-text: #f5a25b;
+
+            --header-grad-1: #0a1826;
+            --header-grad-2: #0f2438;
+            --header-grad-3: #0c3531;
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background-color: var(--page-bg);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 100px;
+            color: var(--text-dark);
+            min-height: 100vh;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .page-hero {
+            background: linear-gradient(135deg, var(--header-grad-1) 0%, var(--header-grad-2) 55%, var(--header-grad-3) 100%);
+            padding: 50px 20px 115px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+            background-size: 26px 26px;
+            pointer-events: none;
+        }
+
+        .page-hero::after {
+            content: '';
+            position: absolute;
+            top: -90px;
+            left: -90px;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(23,156,142,0.28), transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-inner { position: relative; z-index: 2; }
+
+        .uni-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255,255,255,0.75);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .uni-eyebrow::before, .uni-eyebrow::after {
+            content: '';
+            width: 28px;
+            height: 1px;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .page-title {
+            font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
+            color: #ffffff;
+            font-size: 34px;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 9px 22px;
+            background-color: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(6px);
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .hero-badge i { color: var(--secondary-bright); font-size: 13px; }
+
+        .theme-toggle {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            z-index: 5;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.22);
+            background: linear-gradient(150deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04));
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+            background: linear-gradient(150deg, rgba(255,255,255,0.24), rgba(255,255,255,0.06));
+        }
+
+        .theme-toggle:active { transform: scale(0.94); }
+        .theme-toggle:focus-visible { outline: 2px solid var(--secondary-bright); outline-offset: 3px; }
+
+        .theme-toggle i {
+            position: absolute;
+            font-size: 17px;
+            transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .theme-toggle .icon-moon { color: #eaf1fb; opacity: 1; transform: rotate(0deg) scale(1); }
+        .theme-toggle .icon-sun { color: #fbbf24; opacity: 0; transform: rotate(-70deg) scale(0.4); }
+        body.dark .theme-toggle .icon-moon { opacity: 0; transform: rotate(70deg) scale(0.4); }
+        body.dark .theme-toggle .icon-sun { opacity: 1; transform: rotate(0deg) scale(1); }
+
+        .container {
+            max-width: 760px;
+            margin: 0 auto 30px auto;
+            padding: 0 20px;
+        }
+
+        .calc-section {
+            display: flex;
+            justify-content: center;
+            margin-top: -78px;
+            margin-bottom: 42px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .calc-card {
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 20px 45px rgba(10, 31, 54, 0.18);
+            transition: background-color 0.4s ease;
+        }
+
+        .calc-body { padding: 24px 22px 26px 22px; display: flex; flex-direction: column; gap: 26px; }
+
+        .step { display: flex; flex-direction: column; gap: 13px; }
+
+        .step-label {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, var(--header-grad-1), var(--header-grad-3));
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-hint { font-size: 12px; font-weight: 600; color: var(--text-gray); margin-right: 39px; margin-top: -7px; }
+
+        .plan-slider-wrap { margin-right: 39px; display: flex; flex-direction: column; gap: 6px; }
+
+        .plan-readout {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+
+        .plan-value {
+            font-family: 'Alexandria', sans-serif;
+            font-size: 21px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .plan-terms-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 15px;
+            border-radius: 50px;
+            background: var(--secondary-soft);
+            color: var(--secondary-color);
+            font-size: 12.5px;
+            font-weight: 700;
+        }
+        body.dark .plan-terms-note { color: var(--secondary-bright); }
+
+        .qslider {
+            position: relative;
+            height: 26px;
+            margin: 10px 0 2px 0;
+            cursor: pointer;
+            touch-action: none;
+            outline: none;
+        }
+
+        .qslider-track {
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            right: 3px;
+            height: 10px;
+            transform: translateY(-50%);
+            border-radius: 10px;
+            background: var(--page-bg);
+            border: 1px solid var(--card-border);
+        }
+
+        .qslider-fill {
+            position: absolute;
+            top: -1px;
+            bottom: -1px;
+            right: -1px;
+            width: 50%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--secondary-bright));
+            box-shadow: 0 0 12px rgba(47, 196, 180, 0.5);
+            transition: width 0.28s cubic-bezier(0.34, 1.4, 0.5, 1);
+        }
+        .qslider.dragging .qslider-fill { transition: none; }
+
+        .qslider-thumb {
+            position: absolute;
+            top: 50%;
+            right: 50%;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 4px solid var(--secondary-color);
+            box-shadow: 0 5px 16px rgba(15, 43, 72, 0.28);
+            transform: translate(50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: right 0.28s cubic-bezier(0.34, 1.4, 0.5, 1), transform 0.2s ease, border-color 0.3s ease;
+            z-index: 2;
+        }
+        .qslider-thumb::after {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            transition: background 0.3s ease;
+        }
+        .qslider.dragging .qslider-thumb, .qslider:hover .qslider-thumb { transform: translate(50%, -50%) scale(1.12); }
+        .qslider.dragging .qslider-thumb { transition: transform 0.2s ease; }
+        .qslider:focus-visible .qslider-thumb { box-shadow: 0 0 0 5px var(--secondary-soft), 0 5px 16px rgba(15, 43, 72, 0.28); }
+
+        .qslider-scale {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 2px;
+            margin-top: 12px;
+        }
+
+        .qslider-mark {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-gray);
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.25s ease, transform 0.25s ease;
+        }
+        .qslider-mark::before {
+            content: '';
+            width: 2px;
+            height: 7px;
+            border-radius: 2px;
+            background: var(--card-border);
+            transition: background 0.25s ease, height 0.25s ease;
+        }
+        .qslider-mark:hover { color: var(--secondary-color); }
+        .qslider-mark:hover::before { background: var(--secondary-color); }
+        .qslider-mark.on { color: var(--secondary-color); transform: scale(1.15); }
+        .qslider-mark.on::before { background: var(--secondary-color); height: 10px; }
+        body.dark .qslider-mark.on { color: var(--secondary-bright); }
+        body.dark .qslider-mark.on::before { background: var(--secondary-bright); }
+
+        .field-wrap { margin-right: 39px; }
+
+        .qdd-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-dark);
+            background: var(--page-bg);
+            border: 1.5px solid var(--card-border);
+            border-radius: 15px;
+            padding: 14px 18px;
+            cursor: pointer;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            text-align: right;
+        }
+
+        .qdd-btn:hover { border-color: var(--secondary-color); }
+        .qdd-btn:focus-visible { outline: none; border-color: var(--secondary-color); box-shadow: 0 0 0 3px var(--secondary-soft); }
+        .qdd-btn.placeholder { color: var(--text-gray); }
+        .qdd-btn .qdd-chev { font-size: 12px; color: var(--text-gray); }
+
+        .picker-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(6, 14, 24, 0.55);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .picker-overlay.open { opacity: 1; visibility: visible; }
+
+        .picker-modal {
+            width: 94vw;
+            max-width: 540px;
+            max-height: 82vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 30px 70px rgba(6, 14, 24, 0.5);
+            transform: translateY(24px) scale(0.98);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .picker-overlay.open .picker-modal { transform: translateY(0) scale(1); }
+
+        .picker-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--card-border);
+            background: linear-gradient(135deg, var(--header-grad-1), var(--header-grad-2));
+        }
+
+        .picker-head-text h3 {
+            font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+        }
+        .picker-head-text p { color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; margin: 4px 0 0 0; }
+
+        .picker-close {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.22);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.25s, transform 0.25s;
+        }
+        .picker-close:hover { background: rgba(255,255,255,0.18); transform: rotate(90deg); }
+        .picker-close:focus-visible { outline: 2px solid var(--secondary-bright); outline-offset: 2px; }
+
+        .picker-body { padding: 18px; overflow-y: auto; }
+
+        .picker-custom { margin-bottom: 14px; }
+
+        .picker-custom-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: transparent;
+            border: 1.5px dashed var(--card-border);
+            border-radius: 15px;
+            padding: 13px;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .picker-custom-toggle:hover { border-color: var(--secondary-color); color: var(--secondary-color); background: var(--secondary-soft); }
+        .picker-custom-toggle .toggle-chev { font-size: 11px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .picker-custom.open .picker-custom-toggle { border-color: var(--secondary-color); color: var(--secondary-color); border-radius: 15px 15px 0 0; border-bottom-color: transparent; }
+        .picker-custom.open .toggle-chev { transform: rotate(180deg); }
+
+        .picker-custom-row {
+            display: none;
+            gap: 10px;
+            padding: 14px;
+            border: 1.5px dashed var(--secondary-color);
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            background: var(--secondary-soft);
+        }
+        .picker-custom.open .picker-custom-row { display: flex; }
+
+        .picker-custom-input {
+            flex: 1;
+            min-width: 0;
+            font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-align: center;
+            letter-spacing: 4px;
+            direction: ltr;
+            background: var(--card-bg);
+            border: 1.5px solid var(--card-border);
+            border-radius: 12px;
+            padding: 11px 8px;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        .picker-custom-input:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px var(--secondary-soft); }
+        .picker-custom-input::placeholder { color: var(--text-gray); letter-spacing: 1px; font-size: 13px; font-weight: 600; }
+
+        .picker-custom-go {
+            border: none;
+            border-radius: 12px;
+            padding: 0 22px;
+            background: linear-gradient(135deg, var(--secondary-color), #128577);
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .picker-custom-go:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(23, 156, 142, 0.35); }
+
+        .picker-custom-err {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--delete-text);
+        }
+        .picker-custom-err.show { display: flex; animation: rowIn 0.3s; }
+
+        .picker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+            gap: 10px;
+        }
+
+        .picker-opt {
+            position: relative;
+            border-radius: 15px;
+            border: 1.5px solid var(--card-border);
+            background: var(--page-bg);
+            padding: 14px 6px 12px 6px;
+            text-align: center;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.22s ease;
+        }
+
+        .picker-opt b {
+            display: block;
+            font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+            direction: ltr;
+            line-height: 1;
+        }
+
+        .picker-opt span { display: block; margin-top: 6px; font-size: 10.5px; font-weight: 600; color: var(--text-gray); }
+
+        .picker-opt:hover { border-color: var(--secondary-color); transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+        .picker-opt:focus-visible { outline: 2px solid var(--secondary-color); outline-offset: 2px; }
+
+        .picker-opt.selected {
+            background: var(--primary-deep);
+            border-color: var(--primary-deep);
+            box-shadow: 0 6px 18px rgba(15, 43, 72, 0.25);
+        }
+        .picker-opt.selected b { color: #fff; }
+        .picker-opt.selected span { color: rgba(255,255,255,0.65); }
+
+        body.dark .picker-opt.selected { background: var(--secondary-color); border-color: var(--secondary-color); }
+        body.dark .picker-opt.selected b { color: #06211d; }
+        body.dark .picker-opt.selected span { color: rgba(6,33,29,0.7); }
+
+        .picker-opt .opt-badge {
+            position: absolute;
+            top: -9px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--unpaid-color);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 50px;
+            white-space: nowrap;
+        }
+
+        .note-443 {
+            display: none;
+            align-items: flex-start;
+            gap: 10px;
+            margin-right: 39px;
+            margin-top: 2px;
+            padding: 12px 15px;
+            border-radius: 13px;
+            background: rgba(230, 126, 34, 0.09);
+            border: 1px dashed rgba(230, 126, 34, 0.45);
+            color: var(--unpaid-text);
+            font-size: 12.5px;
+            font-weight: 600;
+            line-height: 1.7;
+        }
+        .note-443.show { display: flex; }
+        .note-443 i { margin-top: 3px; }
+
+        .events-list { display: flex; flex-direction: column; gap: 12px; margin-right: 39px; }
+
+        .event-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 15px;
+            background: var(--page-bg);
+            border: 1.5px solid var(--card-border);
+            animation: rowIn 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        @keyframes rowIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .event-row .field-mini { flex: 0 0 118px; }
+
+        .event-row .qdd-btn {
+            font-size: 14px;
+            padding: 10px 13px;
+            border-radius: 11px;
+            background: var(--card-bg);
+        }
+
+        .seg { display: flex; flex: 1; background: var(--card-bg); border: 1.5px solid var(--card-border); border-radius: 11px; overflow: hidden; }
+
+        .seg button {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-gray);
+            padding: 10px 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .seg button:not(:last-child) { border-left: 1.5px solid var(--card-border); }
+
+        .seg button.on[data-type="excuse"] { background: var(--delete-color); color: #fff; }
+        .seg button.on[data-type="defer"] { background: var(--excuse-color); color: #fff; }
+
+        .seg button.locked { opacity: 0.35; cursor: not-allowed; }
+
+        .add-event-btn.disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .row-del {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 10px;
+            border: 1.5px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-gray);
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s;
+        }
+        .row-del:hover { background: var(--delete-color); border-color: var(--delete-color); color: #fff; }
+
+        .add-event-btn {
+            margin-right: 39px;
+            background: transparent;
+            color: var(--text-gray);
+            border: 1.5px dashed var(--card-border);
+            padding: 13px;
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .add-event-btn:hover {
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+            background: var(--secondary-soft);
+        }
+
+        .results-section { display: none; }
+        .results-section.show { display: block; animation: fadeIn 0.6s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title {
+            font-family: 'Alexandria', sans-serif;
+            color: var(--text-dark);
+            text-align: center;
+            margin: 0 0 12px 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .title-divider {
+            width: 70px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--secondary-bright));
+            margin: 0 auto 26px auto;
+            border-radius: 4px;
+        }
+
+        .verdict {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px 20px;
+            border-radius: 18px;
+            font-size: 14.5px;
+            font-weight: 700;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            border: 2px solid transparent;
+        }
+
+        .verdict i { font-size: 20px; margin-top: 4px; }
+
+        .verdict.ok {
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                        linear-gradient(135deg, #22b3a3, #128577) border-box;
+            color: var(--paid-text);
+        }
+
+        .verdict.warn {
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                        linear-gradient(135deg, #ef6a5a, #d5402f) border-box;
+            color: var(--delete-text);
+        }
+
+        .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 30px; }
+
+        .result-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 18px 14px;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .result-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+        .result-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 11px auto;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .result-card.rc-paid .result-icon { background: linear-gradient(135deg, #22b3a3, #128577); }
+        .result-card.rc-cut .result-icon { background: linear-gradient(135deg, #ef6a5a, #d5402f); }
+        .result-card.rc-grad .result-icon { background: linear-gradient(135deg, #4aa8e0, #2b83c2); }
+
+        .result-num {
+            font-family: 'Alexandria', sans-serif;
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1;
+            direction: ltr;
+        }
+
+        .result-sub { font-size: 12px; font-weight: 600; color: var(--text-gray); margin-top: 7px; line-height: 1.6; }
+        .result-name { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-top: 9px; }
+
+        .track-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 22px 20px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 44px;
+        }
+
+        .track-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .track-title { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; color: var(--text-dark); }
+        .track-title i { color: var(--secondary-color); }
+
+        .track-legend { display: flex; gap: 12px; flex-wrap: wrap; }
+        .track-legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--text-gray); }
+        .lg-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+        .lg-paid { background: var(--paid-color); }
+        .lg-excuse { background: var(--excuse-color); }
+        .lg-defer { background: var(--defer-color); }
+        .lg-delete { background: var(--delete-color); }
+        .lg-unpaid { background: var(--unpaid-color); }
+
+        .track-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(102px, 1fr)); gap: 10px; }
+
+        .tchip {
+            position: relative;
+            border-radius: 14px;
+            padding: 12px 8px 10px 8px;
+            text-align: center;
+            border: 2px solid transparent;
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                        linear-gradient(135deg, #d5dce4, #b8c0ca) border-box;
+        }
+
+        .tchip .tc-code { font-family: 'Alexandria', sans-serif; font-size: 19px; font-weight: 800; color: var(--text-dark); direction: ltr; }
+        .tchip .tc-state { display: block; font-size: 10.5px; font-weight: 700; margin-top: 4px; }
+        .tchip .tc-year { display: block; font-size: 10px; font-weight: 600; color: var(--text-gray); margin-top: 3px; }
+
+        .tchip.paid { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #22b3a3, #128577) border-box; }
+        .tchip.paid .tc-state { color: var(--paid-text); }
+
+        .tchip.excuse { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #ef6a5a, #d5402f) border-box; }
+        .tchip.excuse .tc-state { color: var(--delete-text); }
+
+        .tchip.merged {
+            border: 2px dashed var(--card-border);
+            background: var(--past-bg);
+            opacity: 0.85;
+        }
+        .tchip.merged .tc-code { color: var(--past-color); }
+        .tchip.merged .tc-state { color: var(--past-color); }
+
+        .tchip.defer { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #4aa8e0, #2b83c2) border-box; }
+        .tchip.defer .tc-state { color: var(--excuse-text); }
+
+        .tchip.unpaid { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #f0954a, #d5701c) border-box; }
+        .tchip.unpaid .tc-state { color: var(--unpaid-text); }
+
+        .cut-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--delete-color);
+            color: #fff;
+            font-size: 9.5px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 50px;
+            white-space: nowrap;
+            box-shadow: 0 3px 10px rgba(231, 76, 60, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            70% { box-shadow: 0 0 0 7px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+        .rules-section { padding-bottom: 10px; }
+
+        .rules-grid { display: flex; flex-direction: column; gap: 14px; }
+
+        .rule-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 18px;
+            border-radius: 18px;
+            border: 2px solid transparent;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .rule-card.r-excuse { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #4aa8e0, #2b83c2) border-box; }
+        .rule-card.r-delete { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #ef6a5a, #d5402f) border-box; }
+        .rule-card.r-443 { background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, #f0954a, #d5701c) border-box; }
+
+        .rule-icon {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .r-excuse .rule-icon { background: linear-gradient(135deg, #4aa8e0, #2b83c2); }
+        .r-delete .rule-icon { background: linear-gradient(135deg, #ef6a5a, #d5402f); }
+        .r-443 .rule-icon { background: linear-gradient(135deg, #f0954a, #d5701c); }
+
+        .rule-text h3 { margin: 0 0 5px 0; font-size: 15px; font-weight: 700; }
+        .r-excuse .rule-text h3 { color: var(--excuse-text); }
+        .r-delete .rule-text h3 { color: var(--delete-text); }
+        .r-443 .rule-text h3 { color: var(--unpaid-text); }
+        .rule-text p { margin: 0; font-size: 13px; font-weight: 600; color: var(--text-gray); line-height: 1.9; }
+
+        .disclaimer {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin-top: 26px;
+            line-height: 1.9;
+        }
+        .disclaimer i { color: var(--secondary-color); margin-left: 5px; }
+
+        .page-footer {
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--card-border);
+            padding: 16px 0;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.06);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.4s ease;
+        }
+
+        .footer-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 14px;
+            background-color: var(--page-bg);
+            border: 1px solid var(--card-border);
+            padding: 11px 24px;
+            border-radius: 50px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .footer-link:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(23, 156, 142, 0.15);
+        }
+
+        .icon-bg { color: var(--secondary-color); font-size: 17px; }
+
+        .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+            .reveal { opacity: 1; transform: none; }
+        }
+
+        @media (max-width: 768px) {
+            .page-hero { padding: 45px 16px 100px 16px; }
+            .page-title { font-size: 27px; }
+            .page-footer { padding: 12px 10px; gap: 10px; }
+            .footer-link { padding: 10px 18px; font-size: 13px; }
+            .result-grid { grid-template-columns: 1fr; }
+            .result-num { font-size: 27px; }
+            .plan-slider-wrap, .field-wrap, .events-list, .add-event-btn, .step-hint, .note-443 { margin-right: 0; }
+            .track-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
+            .event-row { flex-wrap: wrap; }
+            .event-row .field-mini { flex: 1 1 100%; }
+            .qslider-mark { font-size: 11.5px; }
+            .picker-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
+            .seg { flex: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="page-hero">
+        <button class="theme-toggle" id="theme-toggle" aria-label="تبديل الوضع الليلي"><i class="fas fa-moon icon-moon"></i><i class="fas fa-sun icon-sun"></i></button>
+        <div class="hero-inner">
+            <div class="uni-eyebrow">جامعة القصيم</div>
+            <h1 class="page-title">حاسبة انقطاع المكافأة</h1>
+            <div class="hero-badge"><i class="fas fa-sack-dollar"></i><span>اعرف متى يتوقف صرف مكافأتك قبل ما تتفاجأ</span></div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section class="calc-section">
+            <div class="calc-card">
+                <div class="calc-body">
+
+                    <div class="step">
+                        <div class="step-label"><span class="step-num">1</span>مدة خطتك الدراسية</div>
+                        <div class="plan-slider-wrap">
+                            <div class="plan-readout">
+                                <span class="plan-value" id="plan-value">5 سنوات</span>
+                                <span class="plan-terms-note"><i class="fas fa-sack-dollar"></i><span id="plan-terms-note">10 فصول مكافأة</span></span>
+                            </div>
+                            <div class="qslider" id="plan-slider" role="slider" tabindex="0" aria-label="عدد سنوات دراستك" aria-valuemin="1" aria-valuemax="10" aria-valuenow="5">
+                                <div class="qslider-track"><div class="qslider-fill" id="plan-fill"></div></div>
+                                <div class="qslider-thumb" id="plan-thumb"></div>
+                            </div>
+                            <div class="qslider-scale" id="plan-scale"></div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-label"><span class="step-num">2</span>فصل قبولك في الجامعة (دفعتك)</div>
+                        <div class="step-hint">حتى لو أجّلت أول فصل، اختر فصل قبولك الأصلي ثم أضفه كتأجيل في الخطوة الثالثة</div>
+                        <div class="field-wrap">
+                            <button class="qdd-btn placeholder" id="start-term-btn" type="button">
+                                <span id="start-term-label">اختر فصل القبول...</span>
+                                <i class="fas fa-chevron-down qdd-chev"></i>
+                            </button>
+                        </div>
+                        <div class="note-443" id="note-443">
+                            <i class="fas fa-triangle-exclamation"></i>
+                            <span>دفعة 443 تُحسب مثل دفعة 442، والفصل 443 لا يُحسب فصلًا مستقلًا من مدة المكافأة.</span>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-label"><span class="step-num">3</span>فصول أجّلتها أو اعتذرت عنها</div>
+                        <div class="step-hint">اختياري — لكل طالب فرصتان للتأجيل وفرصتان للاعتذار كحد أقصى</div>
+                        <div class="events-list" id="events-list"></div>
+                        <button class="add-event-btn" id="add-event" type="button"><i class="fas fa-plus"></i>إضافة فصل</button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section" id="results">
+            <h2 class="section-title">نتيجة الحساب</h2>
+            <div class="title-divider"></div>
+
+            <div class="verdict" id="verdict"></div>
+
+            <div class="result-grid">
+                <div class="result-card rc-paid">
+                    <div class="result-icon"><i class="fas fa-hand-holding-dollar"></i></div>
+                    <div class="result-num" id="res-lastpaid">--</div>
+                    <div class="result-name" id="res-lastpaid-name"></div>
+                    <div class="result-sub">آخر فصل تُصرف لك فيه المكافأة</div>
+                </div>
+                <div class="result-card rc-cut">
+                    <div class="result-icon"><i class="fas fa-scissors"></i></div>
+                    <div class="result-num" id="res-cutoff">--</div>
+                    <div class="result-name" id="res-cutoff-name"></div>
+                    <div class="result-sub">الفصل الذي تنقطع فيه المكافأة</div>
+                </div>
+                <div class="result-card rc-grad">
+                    <div class="result-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="result-num" id="res-grad">--</div>
+                    <div class="result-name" id="res-grad-name"></div>
+                    <div class="result-sub">فصل تخرجك المتوقع</div>
+                </div>
+            </div>
+
+            <div class="track-card">
+                <div class="track-head">
+                    <div class="track-title"><i class="fas fa-route"></i>مسار المكافأة فصلًا بفصل</div>
+                    <div class="track-legend">
+                        <span><i class="lg-dot lg-paid"></i>مشمول</span>
+                        <span><i class="lg-dot lg-delete"></i>اعتذار</span>
+                        <span><i class="lg-dot lg-excuse"></i>تأجيل</span>
+                        <span><i class="lg-dot lg-unpaid"></i>بدون مكافأة</span>
+                    </div>
+                </div>
+                <div class="track-grid" id="track-grid"></div>
+            </div>
+        </section>
+
+        <section class="rules-section">
+            <h2 class="section-title">كيف يتم الحساب؟</h2>
+            <div class="title-divider"></div>
+
+            <div class="rules-grid">
+                <div class="rule-card r-delete reveal">
+                    <div class="rule-icon"><i class="fas fa-file-circle-xmark"></i></div>
+                    <div class="rule-text">
+                        <h3>الاعتذار عن فصل (حذف الترم)</h3>
+                        <p>الفصل يُحسب من مدة المكافأة رغم أنك ما درست فيه، فتنقطع المكافأة قبل تخرجك بفصل عن كل اعتذار. مثال: طالب خطته 5 سنوات اعتذر عن فصل 451 وكمّل في 452، تنقطع عنه المكافأة في 501 وهو آخر فصول دراسته.</p>
+                    </div>
+                </div>
+                <div class="rule-card r-excuse reveal">
+                    <div class="rule-icon"><i class="fas fa-clock-rotate-left"></i></div>
+                    <div class="rule-text">
+                        <h3>تأجيل فصل</h3>
+                        <p>الفصل لا يُحسب من مدة المكافأة، فتمتد معك المكافأة وتتأخر نهايتها فصلًا كاملًا. مثال: طالب دفعة 451 أجّل وبدأ دراسته في 452، تستمر مكافأته حتى نهاية خطته وتنقطع في 502.</p>
+                    </div>
+                </div>
+                <div class="rule-card r-443 reveal">
+                    <div class="rule-icon"><i class="fas fa-calendar-plus"></i></div>
+                    <div class="rule-text">
+                        <h3>الحالة الخاصة: الفصل 443</h3>
+                        <p>الفصل الثالث من عام 1444هـ لا يُحسب فصلًا مستقلًا من مدة المكافأة، بل يُعتبر امتدادًا للفصل 442. مثال: طالب بدأ 411 وخطته 5 سنوات، تستمر مكافأته حتى 452 لأن 443 يمر دون أن يُستهلك من المدة. ودفعة 443 تُحسب مثل دفعة 442.</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="disclaimer"><i class="fas fa-circle-info"></i>الحاسبة تقديرية بناءً على الأنظمة المتداولة، والمرجع النهائي هو عمادة القبول والتسجيل بجامعة القصيم.</p>
+        </section>
+
+    </div>
+
+    <div class="picker-overlay" id="picker-overlay" aria-hidden="true">
+        <div class="picker-modal" role="dialog" aria-modal="true" aria-labelledby="picker-title">
+            <div class="picker-head">
+                <div class="picker-head-text">
+                    <h3 id="picker-title">اختر الفصل</h3>
+                    <p id="picker-sub"></p>
+                </div>
+                <button class="picker-close" id="picker-close" type="button" aria-label="إغلاق"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="picker-body">
+                <div class="picker-custom" id="picker-custom">
+                    <button class="picker-custom-toggle" id="picker-custom-toggle" type="button">
+                        <i class="fas fa-clock-rotate-left"></i>
+                        <span>دفعتك أقدم من 411؟ اكتب رقمها بنفسك</span>
+                        <i class="fas fa-chevron-down toggle-chev"></i>
+                    </button>
+                    <div class="picker-custom-row">
+                        <input class="picker-custom-input" id="picker-custom-input" type="text" inputmode="numeric" maxlength="3" placeholder="مثال: 402" autocomplete="off">
+                        <button class="picker-custom-go" id="picker-custom-go" type="button">اعتماد</button>
+                    </div>
+                    <div class="picker-custom-err" id="picker-custom-err"><i class="fas fa-circle-exclamation"></i><span></span></div>
+                </div>
+                <div class="picker-grid" id="picker-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="page-footer">
+        <a href="https://t.me/Qassim_U" class="footer-link" target="_blank" rel="noopener noreferrer">
+            <span class="icon-bg"><i class="fas fa-users"></i></span>
+            <span>Qassim_U</span>
+        </a>
+        <a href="https://t.me/Qassim_QU" class="footer-link" target="_blank" rel="noopener noreferrer">
+            <span class="icon-bg"><i class="fas fa-bullhorn"></i></span>
+            <span>Qassim_QU</span>
+        </a>
+    </footer>
+
+    <script>
+        (function initTheme() {
+            try {
+                const btn = document.getElementById('theme-toggle');
+                let saved = null;
+                try { saved = localStorage.getItem('qu-theme'); } catch (e) {}
+                if (saved === 'dark') document.body.classList.add('dark');
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        const dark = document.body.classList.toggle('dark');
+                        try { localStorage.setItem('qu-theme', dark ? 'dark' : 'light'); } catch (e) {}
+                    });
+                }
+            } catch (e) { console.error(e); }
+        })();
+
+        const FIRST_TERM = 411;
+        const LAST_START_TERM = 481;
+        const TERM_NAMES = { 1: 'الفصل الأول', 2: 'الفصل الثاني', 3: 'الفصل الثالث' };
+
+        function nextTerm(c) {
+            if (c === 442) return 443;
+            if (c === 443) return 451;
+            const y = Math.floor(c / 10), t = c % 10;
+            return t === 1 ? y * 10 + 2 : (y + 1) * 10 + 1;
+        }
+
+        function termYear(c) { return 1400 + Math.floor(c / 10); }
+        function termLabel(c) { return TERM_NAMES[c % 10] + ' ' + termYear(c) + 'هـ'; }
+
+        function termsRange(from, to) {
+            const arr = [];
+            let t = from, guard = 0;
+            while (t <= to && guard < 120) { arr.push(t); t = nextTerm(t); guard++; }
+            return arr;
+        }
+
+        const state = {
+            planYears: 5,
+            planTerms: 10,
+            startTerm: null,
+            events: []
+        };
+
+        const picker = {
+            overlay: document.getElementById('picker-overlay'),
+            grid: document.getElementById('picker-grid'),
+            title: document.getElementById('picker-title'),
+            sub: document.getElementById('picker-sub'),
+            custom: document.getElementById('picker-custom'),
+            customInput: document.getElementById('picker-custom-input'),
+            customErr: document.getElementById('picker-custom-err'),
+            onPick: null,
+            lastFocus: null
+        };
+
+        function showCustomErr(msg) {
+            picker.customErr.querySelector('span').textContent = msg;
+            picker.customErr.classList.add('show');
+        }
+
+        function parseOldTerm(str) {
+            const clean = str.trim().replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+            if (!/^\d{3}$/.test(clean)) return { err: 'اكتب رقم الدفعة من ثلاث خانات، مثل 402' };
+            const v = parseInt(clean, 10);
+            if (v % 10 !== 1 && v % 10 !== 2) return { err: 'آخر خانة هي رقم الفصل، لازم تكون 1 أو 2' };
+            if (v >= FIRST_TERM) return { err: 'هذا الفصل موجود في القائمة تحت، اختره مباشرة' };
+            if (v < 301) return { err: 'رقم الدفعة غير صحيح' };
+            return { value: v };
+        }
+
+        function submitOldTerm() {
+            const res = parseOldTerm(picker.customInput.value);
+            if (res.err) { showCustomErr(res.err); picker.customInput.focus(); return; }
+            const cb = picker.onPick;
+            closePicker();
+            cb(res.value);
+        }
+
+        document.getElementById('picker-custom-toggle').addEventListener('click', function() {
+            const opened = picker.custom.classList.toggle('open');
+            picker.customErr.classList.remove('show');
+            if (opened) picker.customInput.focus();
+        });
+
+        document.getElementById('picker-custom-go').addEventListener('click', submitOldTerm);
+
+        picker.customInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); submitOldTerm(); }
+        });
+
+        picker.customInput.addEventListener('input', function() {
+            picker.customErr.classList.remove('show');
+        });
+
+        function closePicker() {
+            picker.overlay.classList.remove('open');
+            picker.overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            if (picker.lastFocus && picker.lastFocus.focus) picker.lastFocus.focus();
+        }
+
+        function openPicker(cfg) {
+            picker.lastFocus = document.activeElement;
+            picker.onPick = cfg.onPick;
+            picker.title.textContent = cfg.title;
+            picker.sub.textContent = cfg.sub || '';
+            picker.sub.style.display = cfg.sub ? '' : 'none';
+            picker.grid.innerHTML = '';
+
+            picker.custom.style.display = cfg.allowCustom ? '' : 'none';
+            picker.custom.classList.remove('open');
+            picker.customErr.classList.remove('show');
+            if (cfg.allowCustom && cfg.selected !== null && cfg.selected < FIRST_TERM) {
+                picker.customInput.value = cfg.selected;
+                picker.custom.classList.add('open');
+            } else {
+                picker.customInput.value = '';
+            }
+
+            cfg.options.forEach(o => {
+                const opt = document.createElement('button');
+                opt.type = 'button';
+                opt.className = 'picker-opt' + (o.value === cfg.selected ? ' selected' : '');
+                let badge = '';
+                if (o.value === 443) badge = '<span class="opt-badge">فصل ثالث</span>';
+                opt.innerHTML = badge + '<b>' + o.value + '</b><span>' + termLabel(o.value) + '</span>';
+                opt.addEventListener('click', function() {
+                    closePicker();
+                    cfg.onPick(o.value);
+                });
+                picker.grid.appendChild(opt);
+            });
+
+            picker.overlay.classList.add('open');
+            picker.overlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            const sel = picker.grid.querySelector('.picker-opt.selected');
+            if (sel) setTimeout(() => sel.scrollIntoView({ block: 'center' }), 200);
+        }
+
+        document.getElementById('picker-close').addEventListener('click', closePicker);
+        picker.overlay.addEventListener('click', function(e) { if (e.target === picker.overlay) closePicker(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && picker.overlay.classList.contains('open')) closePicker(); });
+
+        function yearsWord(n) {
+            if (n === 1) return 'سنة واحدة';
+            if (n === 2) return 'سنتان';
+            return n + ' سنوات';
+        }
+
+        function termsWord(n) {
+            if (n === 2) return 'فصلان مكافأة';
+            if (n <= 10) return n + ' فصول مكافأة';
+            return n + ' فصلًا مكافأة';
+        }
+
+        (function initPlanSlider() {
+            const slider = document.getElementById('plan-slider');
+            const fill = document.getElementById('plan-fill');
+            const thumb = document.getElementById('plan-thumb');
+            const scale = document.getElementById('plan-scale');
+            const MIN = 1, MAX = 10;
+
+            for (let i = MIN; i <= MAX; i++) {
+                const m = document.createElement('button');
+                m.type = 'button';
+                m.className = 'qslider-mark';
+                m.innerHTML = '<span>' + i + '</span>';
+                m.setAttribute('aria-label', yearsWord(i));
+                m.addEventListener('click', function() { setYears(i); });
+                scale.appendChild(m);
+            }
+            const marks = scale.querySelectorAll('.qslider-mark');
+
+            function paint() {
+                const pct = ((state.planYears - MIN) / (MAX - MIN)) * 100;
+                fill.style.width = pct + '%';
+                thumb.style.right = pct + '%';
+                slider.setAttribute('aria-valuenow', state.planYears);
+                slider.setAttribute('aria-valuetext', yearsWord(state.planYears));
+                document.getElementById('plan-value').textContent = yearsWord(state.planYears);
+                document.getElementById('plan-terms-note').textContent = termsWord(state.planTerms);
+                marks.forEach((el, i) => el.classList.toggle('on', i + MIN === state.planYears));
+            }
+
+            function setYears(y) {
+                y = Math.min(MAX, Math.max(MIN, y));
+                if (y !== state.planYears) {
+                    state.planYears = y;
+                    state.planTerms = y * 2;
+                    recalc();
+                }
+                paint();
+            }
+
+            function valueFromEvent(e) {
+                const rect = slider.getBoundingClientRect();
+                const x = e.touches ? e.touches[0].clientX : e.clientX;
+                const ratio = (rect.right - x) / rect.width;
+                return Math.round(MIN + Math.min(1, Math.max(0, ratio)) * (MAX - MIN));
+            }
+
+            slider.addEventListener('pointerdown', function(e) {
+                slider.classList.add('dragging');
+                slider.setPointerCapture(e.pointerId);
+                setYears(valueFromEvent(e));
+            });
+            slider.addEventListener('pointermove', function(e) {
+                if (!slider.classList.contains('dragging')) return;
+                setYears(valueFromEvent(e));
+            });
+            slider.addEventListener('pointerup', function() { slider.classList.remove('dragging'); });
+            slider.addEventListener('pointercancel', function() { slider.classList.remove('dragging'); });
+
+            slider.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); setYears(state.planYears - 1); }
+                else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); setYears(state.planYears + 1); }
+                else if (e.key === 'Home') { e.preventDefault(); setYears(MIN); }
+                else if (e.key === 'End') { e.preventDefault(); setYears(MAX); }
+            });
+
+            paint();
+        })();
+
+        const startBtn = document.getElementById('start-term-btn');
+        const startLabel = document.getElementById('start-term-label');
+
+        startBtn.addEventListener('click', function() {
+            openPicker({
+                title: 'اختر فصل القبول',
+                sub: 'الفصل الذي قُبلت فيه بالجامعة (دفعتك)',
+                selected: state.startTerm,
+                allowCustom: true,
+                options: termsRange(FIRST_TERM, LAST_START_TERM).map(t => ({ value: t })),
+                onPick: function(v) {
+                    state.startTerm = v;
+                    startLabel.textContent = v + ' — ' + termLabel(v);
+                    startBtn.classList.remove('placeholder');
+                    document.getElementById('note-443').classList.toggle('show', v === 443);
+                    renderEvents();
+                    recalc();
+                }
+            });
+        });
+
+        let eventSeq = 0;
+
+        function typeCount(type, excludeId) {
+            return state.events.filter(e => e.type === type && e.id !== excludeId).length;
+        }
+
+        document.getElementById('add-event').addEventListener('click', function() {
+            if (!state.startTerm) {
+                startBtn.click();
+                return;
+            }
+            let type = null;
+            if (typeCount('defer') < 2) type = 'defer';
+            else if (typeCount('excuse') < 2) type = 'excuse';
+            if (type === null) return;
+            state.events.push({ id: ++eventSeq, term: null, type: type });
+            renderEvents();
+        });
+
+        function refreshAddBtn() {
+            const btn = document.getElementById('add-event');
+            const full = typeCount('defer') >= 2 && typeCount('excuse') >= 2;
+            btn.classList.toggle('disabled', full);
+            btn.innerHTML = full
+                ? '<i class="fas fa-ban"></i>استنفدت فرص التأجيل والاعتذار'
+                : '<i class="fas fa-plus"></i>إضافة فصل';
+        }
+
+        function eventTermOptions(current) {
+            const base = state.startTerm;
+            const horizon = termsRange(base, 999)
+                .filter(t => !(t === 443 && base < 443))
+                .slice(0, state.planTerms + state.events.length + 4);
+            const used = state.events.filter(ev => ev.term !== null && ev.term !== current).map(ev => ev.term);
+            return horizon.filter(t => !used.includes(t));
+        }
+
+        function renderEvents() {
+            const list = document.getElementById('events-list');
+            list.innerHTML = '';
+            if (!state.startTerm) { state.events = []; refreshAddBtn(); return; }
+
+            state.events.forEach(ev => {
+                const row = document.createElement('div');
+                row.className = 'event-row';
+
+                const fw = document.createElement('div');
+                fw.className = 'field-mini';
+                const termBtn = document.createElement('button');
+                termBtn.type = 'button';
+                termBtn.className = 'qdd-btn' + (ev.term === null ? ' placeholder' : '');
+                termBtn.innerHTML = '<span>' + (ev.term === null ? 'الفصل...' : ev.term) + '</span><i class="fas fa-chevron-down qdd-chev"></i>';
+                termBtn.addEventListener('click', function() {
+                    openPicker({
+                        title: 'اختر الفصل',
+                        sub: ev.type === 'excuse' ? 'الفصل الذي اعتذرت عنه' : 'الفصل الذي أجّلته',
+                        selected: ev.term,
+                        options: eventTermOptions(ev.term).map(t => ({ value: t })),
+                        onPick: function(v) {
+                            ev.term = v;
+                            renderEvents();
+                            recalc();
+                        }
+                    });
+                });
+                fw.appendChild(termBtn);
+
+                const seg = document.createElement('div');
+                seg.className = 'seg';
+                [['excuse', 'اعتذار'], ['defer', 'تأجيل']].forEach(([type, label]) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.dataset.type = type;
+                    b.textContent = label;
+                    const locked = ev.type !== type && typeCount(type, ev.id) >= 2;
+                    if (ev.type === type) b.classList.add('on');
+                    if (locked) {
+                        b.classList.add('locked');
+                        b.title = type === 'defer' ? 'استنفدت فرصتي التأجيل' : 'استنفدت فرصتي الاعتذار';
+                    }
+                    b.addEventListener('click', function() {
+                        if (b.classList.contains('locked') || ev.type === type) return;
+                        ev.type = type;
+                        renderEvents();
+                        recalc();
+                    });
+                    seg.appendChild(b);
+                });
+
+                const del = document.createElement('button');
+                del.type = 'button';
+                del.className = 'row-del';
+                del.setAttribute('aria-label', 'حذف السطر');
+                del.innerHTML = '<i class="fas fa-xmark"></i>';
+                del.addEventListener('click', function() {
+                    state.events = state.events.filter(x => x.id !== ev.id);
+                    renderEvents();
+                    recalc();
+                });
+
+                row.appendChild(fw);
+                row.appendChild(seg);
+                row.appendChild(del);
+                list.appendChild(row);
+            });
+
+            refreshAddBtn();
+        }
+
+        function calculate(startTerm, planTerms, evMap) {
+            const start = startTerm;
+            let t = start, consumed = 0, completed = 0, lastPaid = null, grad = null, guard = 0;
+            const track = [];
+            while (grad === null && guard < 80) {
+                const merged443 = t === 443 && start < 443;
+                const ev = merged443 ? null : (evMap[t] || null);
+                const counts = !merged443 && (!ev || ev === 'excuse');
+                const progresses = !merged443 && !ev;
+                let st;
+                if (merged443) st = 'merged';
+                else if (ev === 'excuse') st = 'excuse';
+                else if (ev === 'defer') st = 'defer';
+                else st = consumed < planTerms ? 'paid' : 'unpaid';
+                if (counts) { consumed++; if (consumed === planTerms) lastPaid = t; }
+                if (progresses) { completed++; if (completed === planTerms) grad = t; }
+                track.push({ term: t, state: st });
+                t = nextTerm(t);
+                guard++;
+            }
+            const cutoff = lastPaid !== null ? nextTerm(lastPaid) : null;
+            return { lastPaid, cutoff, grad, track };
+        }
+
+        const STATE_LABELS = {
+            paid: 'مشمول بالمكافأة',
+            unpaid: 'بدون مكافأة',
+            excuse: 'اعتذار، محسوب من المدة',
+            defer: 'تأجيل، غير محسوب',
+            merged: 'يُحسب مع 442'
+        };
+
+        function recalc() {
+            const resSection = document.getElementById('results');
+            if (!state.startTerm) { resSection.classList.remove('show'); return; }
+
+            const evMap = {};
+            state.events.forEach(ev => { if (ev.term !== null) evMap[ev.term] = ev.type; });
+
+            const r = calculate(state.startTerm, state.planTerms, evMap);
+            if (r.grad === null || r.lastPaid === null) { resSection.classList.remove('show'); return; }
+
+            document.getElementById('res-lastpaid').textContent = r.lastPaid;
+            document.getElementById('res-lastpaid-name').textContent = termLabel(r.lastPaid);
+            document.getElementById('res-cutoff').textContent = r.cutoff;
+            document.getElementById('res-cutoff-name').textContent = termLabel(r.cutoff);
+            document.getElementById('res-grad').textContent = r.grad;
+            document.getElementById('res-grad-name').textContent = termLabel(r.grad);
+
+            const verdict = document.getElementById('verdict');
+            const unpaidStudy = r.track.filter(x => x.state === 'unpaid').length;
+            if (unpaidStudy === 0) {
+                verdict.className = 'verdict ok';
+                verdict.innerHTML = '<i class="fas fa-circle-check"></i><span>مكافأتك تغطي كامل فصول دراستك حتى تخرجك المتوقع في <b>' + r.grad + '</b>، وتنقطع رسميًا في <b>' + r.cutoff + '</b> بعد التخرج.</span>';
+            } else {
+                verdict.className = 'verdict warn';
+                verdict.innerHTML = '<i class="fas fa-triangle-exclamation"></i><span>تنقطع مكافأتك في <b>' + r.cutoff + '</b> قبل تخرجك المتوقع، وستدرس <b>' + unpaidStudy + '</b> ' + (unpaidStudy === 1 ? 'فصلًا' : 'فصول') + ' بدون مكافأة.</span>';
+            }
+
+            const grid = document.getElementById('track-grid');
+            grid.innerHTML = '';
+            r.track.forEach(x => {
+                const chip = document.createElement('div');
+                chip.className = 'tchip ' + x.state;
+                let cut = '';
+                if (x.term === r.cutoff) cut = '<span class="cut-badge"><i class="fas fa-scissors"></i> تنقطع هنا</span>';
+                chip.innerHTML = cut +
+                    '<div class="tc-code">' + x.term + '</div>' +
+                    '<span class="tc-state">' + STATE_LABELS[x.state] + '</span>' +
+                    '<span class="tc-year">' + termLabel(x.term) + '</span>';
+                grid.appendChild(chip);
+            });
+
+            resSection.classList.add('show');
+        }
+
+        (function initScrollReveal() {
+            try {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.08 });
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            } catch (e) {
+                document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+                console.error(e);
+            }
+        })();
+    </script>
+</body>
+</html>
